@@ -19,6 +19,7 @@ var just_jumped = false
 onready var sprite = $Sprite
 onready var spriteAnimator = $SpriteAnimator
 onready var coyoteJumpTimer = $CoyoteJumpTimer
+onready var fireBulletTimer = $FireBulletTimer
 onready var gun = $Sprite/PlayerGun
 onready var muzzle = $Sprite/PlayerGun/Sprite/Muzzle
 
@@ -34,7 +35,7 @@ func _physics_process(delta):
 	update_animations(input_vector)
 	move()
 	
-	if Input.is_action_just_pressed("fire"):
+	if Input.is_action_pressed("fire") and fireBulletTimer.time_left == 0:
 		fire_bullet()
 
 func fire_bullet():
@@ -42,6 +43,7 @@ func fire_bullet():
 	bullet.velocity = Vector2.RIGHT.rotated(gun.rotation) * BULLET_SPEED
 	bullet.velocity.x *= sprite.scale.x
 	bullet.rotation = bullet.velocity.angle()
+	fireBulletTimer.start()
 
 
 func create_dust_effect():
@@ -93,7 +95,7 @@ func update_animations(input_vector):
 	
 	if input_vector.x != 0:
 		spriteAnimator.play("Run")
-		spriteAnimator.playback_speed = input_vector.x * sprite.scale.x
+		#spriteAnimator.playback_speed = input_vector.x * sprite.scale.x
 	else:
 		spriteAnimator.playback_speed = 1
 		spriteAnimator.play("Idle") 
