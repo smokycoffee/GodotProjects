@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Enemies/WalkingEnemy.tscn" type="PackedScene" id=1]
+
+[node name="FlyingSnail" type="Node2D"]
+
+[node name="WalkingEnemy" parent="." instance=ExtResource( 1 )]

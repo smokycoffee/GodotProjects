@@ -44,6 +44,9 @@ __meta__ = {
 }
 
 [node name="KinematicBody2D" type="KinematicBody2D" parent="."]
+position = Vector2( 7.9922, 0 )
+collision_layer = 2
+collision_mask = 0
 motion/sync_to_physics = true
 
 [node name="Sprite" type="Sprite" parent="KinematicBody2D"]
@@ -67,6 +70,8 @@ anims/RESET = SubResource( 3 )
 curve = ExtResource( 2 )
 
 [node name="PathFollow2D" type="PathFollow2D" parent="Path2D"]
+position = Vector2( 7.9922, 0 )
+offset = 8.00074
 rotate = false
 loop = false
 

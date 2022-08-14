@@ -7,7 +7,7 @@ export(int) var ACCELERATION = 512
 export(int) var MAX_SPEED = 64
 export(float) var FRICTION = 0.25
 export(int) var GRAVITY = 200
-export(int) var JUMP_FORCE = 128
+export(int) var JUMP_FORCE = 155 #128 before
 export(int) var MAX_SLOPE_ANGLE = 46
 export(int) var BULLET_SPEED = 250
 
@@ -77,7 +77,7 @@ func jump_check():
 			just_jumped = true
 			snap_vector = Vector2.ZERO
 	else:
-		if Input.is_action_just_released("ui_up") and motion.y < -JUMP_FORCE /2:
+		if Input.is_action_just_released("ui_up") and motion.y < -JUMP_FORCE / 2:
 			motion.y = -JUMP_FORCE/2
 
 
