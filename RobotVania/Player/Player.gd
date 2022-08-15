@@ -2,6 +2,9 @@ extends KinematicBody2D
 
 const DustEffect = preload("res://Effects/DustEffect.tscn")
 const PlayerBullet = preload("res://Player/PlayetBullet.tscn")
+const JumpEffect = preload("res://Effects/JumpEffect.tscn")
+
+var PlayerStats = ResourceLoader.PlayerStats
 
 export(int) var ACCELERATION = 512
 export(int) var MAX_SPEED = 64
@@ -12,19 +15,29 @@ export(int) var MAX_SLOPE_ANGLE = 46
 export(int) var BULLET_SPEED = 250
 
 
+var invincible = false setget set_invincible
 var motion = Vector2.ZERO
 var snap_vector = Vector2.ZERO
 var just_jumped = false
 
 onready var sprite = $Sprite
 onready var spriteAnimator = $SpriteAnimator
+onready var blinkAnimator = $BlinkAnimator
 onready var coyoteJumpTimer = $CoyoteJumpTimer
 onready var fireBulletTimer = $FireBulletTimer
 onready var gun = $Sprite/PlayerGun
 onready var muzzle = $Sprite/PlayerGun/Sprite/Muzzle
 
+
+func set_invincible(value):
+	invincible = value
+
+func _ready():
+	PlayerStats.connect("player_died", self, "_on_died")
+
 func _physics_process(delta):
 	just_jumped = false
+
 	
 	var input_vector = get_input_vector()
 	apply_horizontal_force(input_vector, delta)
@@ -73,6 +86,7 @@ func update_snap_vector():
 func jump_check():
 	if is_on_floor() or coyoteJumpTimer.time_left > 0:
 		if Input.is_action_just_pressed("ui_up"):
+			Utils.instance_scene_on_main(JumpEffect, global_position)
 			motion.y = -JUMP_FORCE
 			just_jumped = true
 			snap_vector = Vector2.ZERO
@@ -113,10 +127,20 @@ func move():
 	#landing
 	if was_in_air and is_on_floor():
 		motion.x = last_motion.x
-		create_dust_effect()
+		Utils.instance_scene_on_main(JumpEffect, global_position)
+		#create_dust_effect()
 	
 	# just left ground
 	if was_on_floor and not is_on_floor() and not just_jumped:
 		motion.y = 0
 		position.y = last_postion.y
 		coyoteJumpTimer.start()
+
+
+func _on_HurtBox_hit(damage):
+	if not invincible:
+		PlayerStats.health -= 1
+		blinkAnimator.play("Blink")
+
+func _on_died():  
+	queue_free()
