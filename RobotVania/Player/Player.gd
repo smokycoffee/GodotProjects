@@ -14,11 +14,17 @@ export(int) var JUMP_FORCE = 155 #128 before
 export(int) var MAX_SLOPE_ANGLE = 46
 export(int) var BULLET_SPEED = 250
 
+enum {
+	MOVE,
+	WALL_SLIDE
+}
 
+var state = MOVE
 var invincible = false setget set_invincible
 var motion = Vector2.ZERO
 var snap_vector = Vector2.ZERO
 var just_jumped = false
+var double_jump = true
 
 onready var sprite = $Sprite
 onready var spriteAnimator = $SpriteAnimator
@@ -38,15 +44,20 @@ func _ready():
 func _physics_process(delta):
 	just_jumped = false
 
-	
-	var input_vector = get_input_vector()
-	apply_horizontal_force(input_vector, delta)
-	apply_friction(input_vector)
-	update_snap_vector()
-	jump_check()
-	apply_gravity(delta)
-	update_animations(input_vector)
-	move()
+	match state:
+		MOVE:
+			var input_vector = get_input_vector()
+			apply_horizontal_force(input_vector, delta)
+			apply_friction(input_vector)
+			update_snap_vector()
+			jump_check()
+			apply_gravity(delta)
+			update_animations(input_vector)
+			move()
+			wall_slide_check()
+			
+		WALL_SLIDE:
+			pass
 	
 	if Input.is_action_pressed("fire") and fireBulletTimer.time_left == 0:
 		fire_bullet()
@@ -86,14 +97,20 @@ func update_snap_vector():
 func jump_check():
 	if is_on_floor() or coyoteJumpTimer.time_left > 0:
 		if Input.is_action_just_pressed("ui_up"):
-			Utils.instance_scene_on_main(JumpEffect, global_position)
-			motion.y = -JUMP_FORCE
+			jump(JUMP_FORCE)
 			just_jumped = true
-			snap_vector = Vector2.ZERO
 	else:
 		if Input.is_action_just_released("ui_up") and motion.y < -JUMP_FORCE / 2:
 			motion.y = -JUMP_FORCE/2
+		
+		if Input.is_action_just_pressed("ui_up") and double_jump == true:
+			jump(JUMP_FORCE * .75)
+			double_jump = false
 
+func jump(force):
+	Utils.instance_scene_on_main(JumpEffect, global_position)
+	motion.y = -force
+	snap_vector = Vector2.ZERO
 
 func apply_gravity(delta):
 	if not is_on_floor():
@@ -126,6 +143,7 @@ func move():
 	motion = move_and_slide_with_snap(motion, snap_vector *4, Vector2.UP, true, 4,deg2rad(MAX_SLOPE_ANGLE))
 	#landing
 	if was_in_air and is_on_floor():
+		double_jump = true
 		motion.x = last_motion.x
 		Utils.instance_scene_on_main(JumpEffect, global_position)
 		#create_dust_effect()
@@ -136,6 +154,10 @@ func move():
 		position.y = last_postion.y
 		coyoteJumpTimer.start()
 
+func wall_slide_check():
+	if not is_on_floor() and is_on_wall():
+		state = WALL_SLIDE
+		double_jump = true
 
 func _on_HurtBox_hit(damage):
 	if not invincible:
