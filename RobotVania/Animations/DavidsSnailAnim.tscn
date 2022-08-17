@@ -23,6 +23,6 @@ frame = 2
 [node name="AnimatedSprite" type="AnimatedSprite" parent="Sprite"]
 frames = SubResource( 1 )
 animation = "RocketAnimation"
-frame = 3
+frame = 2
 speed_scale = 0.5
 playing = true
