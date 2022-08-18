@@ -299,19 +299,19 @@ __meta__ = {
 }
 
 [node name="FlyingEnemy4" parent="." instance=ExtResource( 10 )]
-position = Vector2( 1305, 132 )
+position = Vector2( 1017, 100 )
 __meta__ = {
 "_edit_group_": true
 }
 
 [node name="FlyingEnemy3" parent="." instance=ExtResource( 10 )]
-position = Vector2( 1321, 68 )
+position = Vector2( 1033, 36 )
 __meta__ = {
 "_edit_group_": true
 }
 
 [node name="FlyingEnemy5" parent="." instance=ExtResource( 10 )]
-position = Vector2( 1353, 116 )
+position = Vector2( 1065, 84 )
 __meta__ = {
 "_edit_group_": true
 }

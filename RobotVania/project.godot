@@ -49,6 +49,7 @@ window/stretch/aspect="keep"
 
 "use pixel"=false
 "use pixel snap"=true
+rc=false
 
 [gui]
 
